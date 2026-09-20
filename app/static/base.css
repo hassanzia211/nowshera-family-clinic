@@ -1,0 +1,12 @@
+/* System fonts keep the clinic interface usable without third-party requests. */
+html {
+  color-scheme: light;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #c89b52;
+}
+::selection {
+  background: #d3e1ba;
+  color: #143d35;
+}

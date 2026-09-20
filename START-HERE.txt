@@ -1,0 +1,27 @@
+NOWSHERA FAMILY CLINIC — QUICK START
+
+1. Extract the ZIP fully.
+2. Install Python 3.11+ with "Add Python to PATH" if needed.
+3. Double-click START-WINDOWS.bat.
+4. Read the generated password in the Notepad window.
+5. Open http://127.0.0.1:5000 if the browser does not open.
+6. Keep the server window open.
+
+DEMO EMAILS
+Admin: admin@clinic.test
+Doctor: ayesha@clinic.test
+Patient: patient@clinic.test
+Second patient: patient2@clinic.test
+
+Passwords are generated on first launch; see instance/DEMO-LOGINS.txt.
+Choose a future Monday-Saturday date for seeded doctors.
+
+IMPORTANT EMAIL SETUP
+Default mode saves emails as .eml files in instance/outbox/.
+It does NOT send real emails until you configure SMTP in .env.
+See README.md for the exact configuration steps.
+
+Included: source code, database schema, automated tests, Postman collection,
+architecture explanation, testing report, and submission demo script.
+
+Do not upload .env or the instance/ folder to GitHub.

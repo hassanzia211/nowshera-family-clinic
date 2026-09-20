@@ -1,0 +1,397 @@
+{
+  "info": {
+    "name": "Nowshera Family Clinic API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Use Session, Login, then Session again. Set credentials and future date/time variables. Book slot body uses numeric doctor_id 2; edit it for another doctor."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000/api"
+    },
+    {
+      "key": "csrf",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": "patient@clinic.test"
+    },
+    {
+      "key": "password",
+      "value": "READ instance/DEMO-LOGINS.txt"
+    },
+    {
+      "key": "doctor_id",
+      "value": "2"
+    },
+    {
+      "key": "patient_id",
+      "value": "5"
+    },
+    {
+      "key": "appointment_id",
+      "value": "1"
+    },
+    {
+      "key": "date",
+      "value": "2026-09-21"
+    },
+    {
+      "key": "start",
+      "value": "2026-09-21T09:00:00"
+    },
+    {
+      "key": "new_start",
+      "value": "2026-09-21T10:00:00"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Get session and CSRF",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/session"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"csrf\", pm.response.json().csrf);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Sign in",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "3. Refresh CSRF after login",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/session"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"csrf\", pm.response.json().csrf);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctor directory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/doctors"
+      }
+    },
+    {
+      "name": "Free slots",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/doctors/{{doctor_id}}/slots?date={{date}}"
+      }
+    },
+    {
+      "name": "Book slot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"doctor_id\": 2,\n  \"start\": \"{{start}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "All permitted appointments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/appointments"
+      }
+    },
+    {
+      "name": "Confirm appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/appointments/{{appointment_id}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Confirmed\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cancel appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/appointments/{{appointment_id}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Cancelled\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Complete with private note",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/appointments/{{appointment_id}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Completed\",\n  \"note\": \"Follow-up discussed.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Read private note (admin denied)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/appointments/{{appointment_id}}/note"
+      }
+    },
+    {
+      "name": "Reschedule",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/appointments/{{appointment_id}}/reschedule",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"start\": \"{{new_start}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Add doctor (admin only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/doctors",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dr. New Doctor\",\n  \"specialty\": \"General Medicine\",\n  \"email\": \"doctor@example.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Working hours (doctor only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/availability",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"weekday\": 0,\n  \"start\": \"09:00\",\n  \"end\": \"11:00\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Add leave (doctor only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/leaves",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"date\": \"{{date}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Patient history (own doctor only)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/patients/{{patient_id}}/history"
+      }
+    },
+    {
+      "name": "Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/dashboard"
+      }
+    },
+    {
+      "name": "Sign out",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRF-Token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/logout",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
